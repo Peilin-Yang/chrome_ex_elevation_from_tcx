@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>[NFNDZ]Elevation Chart from TCX</title>
+    <link rel="icon" href="icon.png">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/toastr.min.css">
+    <link rel="stylesheet" href="css/fileinput.min.css">
+    <link rel="stylesheet" href="css/main.css">
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+       <div class="col-sm-6 col-md-6 col-lg-6 col-sm-offset-3 col-md-offset-3 col-lg-offset-3">
+        <h2>[NFNDZ]Elevation Chart from TCX</h2>
+        <div class="text-danger"><h3><strong>Please Read Carefully Before Use This Toolkit!!!</strong></h3></div>
+        <ul>
+          <li>Use this toolkit at your own risk. The author takes no responsibility of the possible problems it brings.</li>
+          <li>Please upgrade Chrome to the latest version.</li>
+          <li>To easily download TCX file, you may want to look at my another Chrome Extension at <a target="_blank" href="https://chrome.google.com/webstore/detail/nfndzgarmin-activities-ba/pipodkdpejbfmdnfebopmidgbefgfmcj">Here</a></li>
+        </ul>
+       </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-md-6 col-lg-6 col-sm-offset-3 col-md-offset-3 col-lg-offset-3">
+          <form id="main-form">
+            <div class="form-group input-daterange">
+              <label class="col-sm-12 col-md-12 col-lg-12 control-label">Select a TCX file from local disk</label>
+              <input id="input-tcx" type="file" class="file-preview-text">
+            </div>
+          </form>
+
+          <div id="pbar0" style="display:none;">
+            <p class="text-center" id="info-text"></p>
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                <span class="sr-only"></span>
+              </div>
+            </div>
+          </div>
+
+          <div id="elevation-div" style="display:none;" class="row">
+            <div class="panel panel-default col-sm-4 col-md-4 col-lg-4">
+              <div class="panel-heading">
+                <h4 class="panel-title">TCX Raw</h4>
+              </div>
+              <div id="tcx-ele" class="panel-body">
+                
+              </div>
+            </div>
+            <div class="panel panel-default col-sm-4 col-md-4 col-lg-4">
+              <div class="panel-heading">
+                <h4 class="panel-title">Google Elevation by Location</h4>
+              </div>
+              <div id="gl-ele" class="panel-body">
+                
+              </div>
+            </div>
+            <div class="panel panel-default col-sm-4 col-md-4 col-lg-4">
+              <div class="panel-heading">
+                <h4 class="panel-title" data-toggle="tooltip" data-placement="bottom" title="Currently every 60 geopoints are interpolated to make up 300 geopoints">Google Elevation by Path<i class="fa fa-question-circle" aria-hidden="true"></i></h4>
+              </div>
+              <div id="gp-ele" class="panel-body">
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="draw"> </div>
+    <div id="draw_path"> </div>
+  </body>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/toastr.min.js"></script>
+  <script src="js/moment.min.js"></script>
+  <script src="js/fileinput.js"></script>
+  <script src="js/highcharts.js"></script>
+  <script src="js/main.js"></script>
+
+</html>
