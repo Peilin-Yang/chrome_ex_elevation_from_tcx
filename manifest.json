@@ -3,7 +3,7 @@
 
   "name": "[NFNDZ]Elevation Chart from TCX",
   "description": "This extension shows multiple elevation chart from input TCX file",
-  "version": "1.1",
+  "version": "1.2",
 
   "browser_action": {
     "default_icon": "icon.png",

@@ -44,6 +44,12 @@
           </div>
 
           <div id="elevation-div" style="display:none;" class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12 form-group">
+              <label for="moving_window">Smoothing Moving Window</label>
+              <input type="text" id="moving_window" placeholder="please input an integer">
+              <Button id="smooth" class="btn btn-default">Smooth the Data Points</button>
+            </div>
+
             <div class="panel panel-default col-sm-4 col-md-4 col-lg-4">
               <div class="panel-heading">
                 <h4 class="panel-title">TCX Raw</h4>
@@ -62,7 +68,7 @@
             </div>
             <div class="panel panel-default col-sm-4 col-md-4 col-lg-4">
               <div class="panel-heading">
-                <h4 class="panel-title" data-toggle="tooltip" data-placement="bottom" title="Currently every 60 geopoints are interpolated to make up 300 geopoints">Google Elevation by Path<i class="fa fa-question-circle" aria-hidden="true"></i></h4>
+                <h4 class="panel-title" data-toggle="tooltip" data-placement="bottom" title="Currently every 60 geopoints are interpolated to make up 300 geopoints">Google Elevation by Path<i class="fa fa-question-circle fa-fw" aria-hidden="true"></i></h4>
               </div>
               <div id="gp-ele" class="panel-body">
                 

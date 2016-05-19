@@ -3,6 +3,7 @@ var api_key = 'AIzaSyBPSlgw6tIBOXCKG-_NI1IJQ9arfasjhVo';
 var g_geo_point_precision = 6;
 var g_max_points = 60;
 var g_path_sample_factor = 5;
+var g_smoothing_factor = 20;
 var g_path_samples = g_max_points * g_path_sample_factor;
 var g_api_url = 'https://maps.googleapis.com/maps/api/elevation/json';
 
@@ -13,6 +14,10 @@ var g_tcx_altitudes = [];
 var g_google_split_arrays = [];
 var g_google_location_altitudes = [];
 var g_google_path_altitudes = [];
+
+var g_clone_tcx_altitudes = [];
+var g_clone_google_location_altitudes = [];
+var g_clone_google_path_altitudes = [];
 
 var g_location_total_cnt = 0;
 var g_location_receive_idx = 0;
@@ -47,6 +52,10 @@ function _reset_vars() {
   g_google_location_altitudes = [];
   g_google_path_altitudes = [];
 
+  g_clone_tcx_altitudes = [];
+  g_clone_google_location_altitudes = [];
+  g_clone_google_path_altitudes = [];
+
   g_location_total_cnt = 0;
   g_location_receive_idx = 0;
   g_location_total_cnt = 0;
@@ -61,6 +70,62 @@ function _reset() {
   $('#draw').hide();
   $('#draw_path').hide();
   $('#ele-div').hide();
+}
+
+function clone_altitudes() {
+  g_clone_tcx_altitudes = jQuery.extend(true, [], g_tcx_altitudes);
+  g_clone_google_location_altitudes = jQuery.extend(true, [], g_google_location_altitudes);
+  g_clone_google_path_altitudes = jQuery.extend(true, [], g_google_path_altitudes);
+}
+
+function clone_altitudes_back() {
+  g_tcx_altitudes = jQuery.extend(true, [], g_clone_tcx_altitudes);
+  g_google_location_altitudes = jQuery.extend(true, [], g_clone_google_location_altitudes);
+  g_google_path_altitudes = jQuery.extend(true, [], g_clone_google_path_altitudes);
+}
+
+function simple_moving_averager(period) {
+  var nums = [];
+  return function(num) {
+    nums.push(num);
+    if (nums.length > period)
+        nums.splice(0,1);  // remove the first element of the array
+    var sum = 0;
+    for (var i in nums)
+        sum += nums[i];
+    var n = period;
+    if (nums.length < period)
+        n = nums.length;
+    return(sum/n);
+  }
+}
+
+function smooth_altitudes() {
+  if (g_smoothing_factor == 0) {
+    clone_altitudes_back();
+  } else {
+    var sma = simple_moving_averager(g_smoothing_factor);
+    var local_tcx_raw = [];
+    for (var i in g_clone_tcx_altitudes) {
+      var n = parseFloat(g_clone_tcx_altitudes[i]);
+      local_tcx_raw.push(sma(n));
+    }
+    g_tcx_altitudes = local_tcx_raw;
+
+    var local_google_location_altitudes = [];
+    for (var i in g_clone_google_location_altitudes) {
+      var n = parseFloat(g_clone_google_location_altitudes[i]);
+      local_google_location_altitudes.push(sma(n));
+    }
+    g_google_location_altitudes = local_google_location_altitudes;
+
+    var local_google_path_altitudes = [];
+    for (var i in g_clone_google_path_altitudes) {
+      var n = parseFloat(g_clone_google_path_altitudes[i]);
+      local_google_path_altitudes.push(sma(n));
+    }
+    g_google_path_altitudes = local_google_path_altitudes;
+  }
 }
 
 function cal_elevation_gain_loss(altitudes_array) {
@@ -201,6 +266,12 @@ function init_fileinput() {
   });
 }
 
+function show() {
+  show_elevation_gain_loss();
+  draw_highchart(prepare_draw_data());
+  draw_highchart_from_path_data(prepare_path_draw_data());
+}
+
 function async_get_google_maps_altitudes_path(geo_array) {
   $.getJSON(g_api_url, { 
     'path': geo_array.join('|'), 
@@ -218,9 +289,8 @@ function async_get_google_maps_altitudes_path(geo_array) {
       );
       if (g_path_receive_idx == g_path_total_cnt) {
         $('#pbar0').hide();
-        show_elevation_gain_loss();
-        draw_highchart(prepare_draw_data());
-        draw_highchart_from_path_data(prepare_path_draw_data());
+        clone_altitudes();
+        show();
       } else {
         // continue
         async_get_google_maps_altitudes_path(g_google_split_arrays[g_path_receive_idx]);
@@ -261,7 +331,7 @@ function async_get_google_maps_altitudes_location(geo_array) {
         })
       );
       if (g_location_receive_idx == g_location_total_cnt) {
-        console.log(cal_elevation_gain_loss(g_google_location_altitudes));
+        //console.log(cal_elevation_gain_loss(g_google_location_altitudes));
         //$('#pbar0').hide();
         //draw_highchart(prepare_draw_data());
         get_google_altitude_by_path();
@@ -338,6 +408,22 @@ function init_form_submit() {
   });
 }
 
+function init_smoothing() {
+  $('#smooth').on('click', function( event ) {
+    try {
+      var smoothFactor = parseInt($('#moving_window').val());
+      if (smoothFactor < 0) throw "Smoothing Error: smoothing factor cannot be negative";
+    }
+    catch(err) {
+      toastr.error('Please provide a valid Integer!');
+      return;
+    }
+    g_smoothing_factor = smoothFactor;
+    smooth_altitudes();
+    show();
+  });
+}
+
 
 $( document ).ready(function() {
   toastr.options = {
@@ -359,4 +445,5 @@ $( document ).ready(function() {
   init_fileinput();
   init_form_submit();
   $('[data-toggle="tooltip"]').tooltip();
+  init_smoothing();
 });
